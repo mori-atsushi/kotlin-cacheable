@@ -1,5 +1,5 @@
 [versions]
-auto-service = "1.0.1"
+auto-service = "1.1.1"
 auto-service-ksp = "1.1.0"
 kotlin = "1.9.20"
 ktlint = "0.48.1"
