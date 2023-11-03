@@ -1,6 +1,6 @@
 package com.moriatsushi.cacheable.compiler.factory
 
-import com.moriatsushi.cacheable.compiler.resolver.ClassResolver
+import com.moriatsushi.cacheable.compiler.declaration.CacheableDeclarations
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
 import org.jetbrains.kotlin.ir.declarations.IrFactory
 import org.jetbrains.kotlin.ir.declarations.IrField
@@ -9,12 +9,10 @@ import org.jetbrains.kotlin.ir.declarations.createExpressionBody
 import org.jetbrains.kotlin.ir.expressions.IrExpressionBody
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetFieldImpl
-import org.jetbrains.kotlin.ir.util.functions
-import org.jetbrains.kotlin.name.Name
 
 class IrCacheableExpressionBodyFactory(
     private val irFactory: IrFactory,
-    private val classResolver: ClassResolver,
+    private val cacheableDeclarations: CacheableDeclarations,
 ) {
     fun create(
         originalFunction: IrFunction,
@@ -24,8 +22,8 @@ class IrCacheableExpressionBodyFactory(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
             type = originalFunction.returnType,
-            symbol = classResolver.irCacheStoreClass.functions
-                .single { it.owner.name == Name.identifier("cacheOrInvoke") },
+            symbol = cacheableDeclarations.cacheStoreClassDeclaration
+                .irCacheOrInvokeFunctionSymbol,
             typeArgumentsCount = 0,
             valueArgumentsCount = 0
         )

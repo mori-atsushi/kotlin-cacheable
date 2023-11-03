@@ -1,9 +1,8 @@
 package com.moriatsushi.cacheable.compiler
 
+import com.moriatsushi.cacheable.compiler.declaration.CacheableDeclarations
 import com.moriatsushi.cacheable.compiler.factory.IrCacheStoreFieldFactory
 import com.moriatsushi.cacheable.compiler.factory.IrCacheableExpressionBodyFactory
-import com.moriatsushi.cacheable.compiler.resolver.ClassResolver
-import com.moriatsushi.cacheable.compiler.resolver.TypeResolver
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
@@ -17,16 +16,15 @@ class CacheableIrGenerationExtension : IrGenerationExtension {
     private fun createCacheableIrElementTransformer(
         pluginContext: IrPluginContext,
     ): CacheableIrElementTransformer {
-        val classResolver = ClassResolver(pluginContext)
-        val typeResolver = TypeResolver(classResolver)
+        val cacheableDeclarations = CacheableDeclarations.find(pluginContext)
+            ?: error("Please check the dependency for kotlin-cacheable")
         val irCacheStoreFieldFactory = IrCacheStoreFieldFactory(
             pluginContext.irFactory,
-            classResolver,
-            typeResolver,
+            cacheableDeclarations,
         )
         val irCacheableExpressionBodyFactory = IrCacheableExpressionBodyFactory(
             pluginContext.irFactory,
-            classResolver
+            cacheableDeclarations,
         )
         return CacheableIrElementTransformer(
             irCacheStoreFieldFactory = irCacheStoreFieldFactory,
