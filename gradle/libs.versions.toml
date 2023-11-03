@@ -1,10 +1,19 @@
 [versions]
+auto-service = "1.0.1"
+auto-service-ksp = "1.1.0"
 kotlin = "1.9.20"
 ktlint = "0.48.1"
+maven-publish = "0.25.3"
 spotless = "6.22.0"
+ksp = "1.9.20-1.0.14"
 
 [libraries]
+auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service" }
+auto-service-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version.ref = "auto-service-ksp" }
+kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
