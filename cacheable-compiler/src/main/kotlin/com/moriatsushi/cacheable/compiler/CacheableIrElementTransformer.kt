@@ -1,8 +1,10 @@
 package com.moriatsushi.cacheable.compiler
 
+import com.moriatsushi.cacheable.compiler.factory.IrCacheStoreFieldFactory
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.UNDEFINED_OFFSET
+import org.jetbrains.kotlin.ir.declarations.IrDeclarationContainer
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.expressions.IrBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrCall
@@ -20,6 +22,7 @@ import org.jetbrains.kotlin.name.Name
 
 class CacheableIrElementTransformer(
     private val pluginContext: IrPluginContext,
+    private val irCacheStoreFieldFactory: IrCacheStoreFieldFactory,
 ) : IrElementTransformerVoid() {
     private val printlnSymbol: IrSimpleFunctionSymbol = pluginContext
         .referenceFunctions(
@@ -41,11 +44,17 @@ class CacheableIrElementTransformer(
         val body = declaration.body as? IrBlockBody
             ?: error("Unexpected function body type")
 
+        val parent = (declaration.parent as? IrDeclarationContainer)
+            ?: error("Unexpected function parent type")
+
+        val irCacheStoreField = irCacheStoreFieldFactory.create(declaration)
+        parent.declarations.add(irCacheStoreField)
+
         // TODO: This is an example implementation. Implement the actual logic.
         val printlnCall = createPrintlnCall(irString(declaration.name.identifier))
         body.statements.add(0, printlnCall)
 
-        return super.visitFunction(declaration)
+        return declaration
     }
 
     private fun createPrintlnCall(value: IrExpression): IrCall =
