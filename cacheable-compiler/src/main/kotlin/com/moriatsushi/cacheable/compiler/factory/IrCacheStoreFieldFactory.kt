@@ -24,6 +24,7 @@ class IrCacheStoreFieldFactory(
             name = Name.identifier("_${function.name.identifier}_cache")
             type = typeResolver.irCacheStoreType
             visibility = DescriptorVisibilities.PRIVATE
+            isStatic = true
         }
         field.initializer = irFactory.createExpressionBody(
             IrConstructorCallImpl(

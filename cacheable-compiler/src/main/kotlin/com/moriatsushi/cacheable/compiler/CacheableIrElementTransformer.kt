@@ -24,7 +24,10 @@ class CacheableIrElementTransformer(
         val irCacheStoreField = irCacheStoreFieldFactory.create(declaration)
         parent.declarations.add(irCacheStoreField)
 
-        declaration.body = irCacheableExpressionBodyFactory.create(declaration)
+        declaration.body = irCacheableExpressionBodyFactory.create(
+            declaration,
+            irCacheStoreField,
+        )
 
         return declaration
     }

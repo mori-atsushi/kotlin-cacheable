@@ -9,9 +9,7 @@ package com.moriatsushi.cacheable.internal
 class CacheStore {
     private var cache: Any? = null
 
-    fun get(): Any? = cache
-
-    fun set(value: Any) {
-        cache = value
+    fun cacheOrInvoke(): Int {
+        return 100
     }
 }

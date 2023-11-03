@@ -24,7 +24,10 @@ class CacheableIrGenerationExtension : IrGenerationExtension {
             classResolver,
             typeResolver,
         )
-        val irCacheableExpressionBodyFactory = IrCacheableExpressionBodyFactory(pluginContext)
+        val irCacheableExpressionBodyFactory = IrCacheableExpressionBodyFactory(
+            pluginContext.irFactory,
+            classResolver
+        )
         return CacheableIrElementTransformer(
             irCacheStoreFieldFactory = irCacheStoreFieldFactory,
             irCacheableExpressionBodyFactory = irCacheableExpressionBodyFactory,
