@@ -3,7 +3,7 @@ package com.moriatsushi.cacheable.compiler.declaration
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 
 class CacheableDeclarations(
-    val cacheStoreClassDeclaration: CacheStoreClassDeclaration
+    val cacheStoreClassDeclaration: CacheStoreClassDeclaration,
 ) {
     companion object {
         fun find(pluginContext: IrPluginContext): CacheableDeclarations? {

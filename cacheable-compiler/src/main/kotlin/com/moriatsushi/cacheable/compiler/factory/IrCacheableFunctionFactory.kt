@@ -55,7 +55,7 @@ class IrCacheableFunctionFactory(
             type = cacheStoreField.type,
             symbol = originalFunction.symbol,
             typeArgumentsCount = 0,
-            valueArgumentsCount = 0
+            valueArgumentsCount = 0,
         )
         lambda.parent = outputFunction
         lambda.body = irFactory.createExpressionBody(originalCall)
@@ -73,14 +73,14 @@ class IrCacheableFunctionFactory(
             symbol = cacheableDeclarations.cacheStoreClassDeclaration
                 .irCacheOrInvokeFunctionSymbol,
             typeArgumentsCount = 0,
-            valueArgumentsCount = 1
+            valueArgumentsCount = 1,
         )
         expressionCall.putValueArgument(0, lambdaExpression)
         expressionCall.dispatchReceiver = IrGetFieldImpl(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
             symbol = cacheStoreField.symbol,
-            type = cacheStoreField.type
+            type = cacheStoreField.type,
         )
         return irFactory.createExpressionBody(expressionCall)
     }

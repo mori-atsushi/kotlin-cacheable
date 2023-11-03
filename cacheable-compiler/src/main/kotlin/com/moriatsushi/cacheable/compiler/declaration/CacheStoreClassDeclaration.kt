@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
 class CacheStoreClassDeclaration(
-    val irClassSymbol: IrClassSymbol
+    val irClassSymbol: IrClassSymbol,
 ) {
     val irType: IrSimpleType
         get() = irClassSymbol.createType(false, emptyList())
