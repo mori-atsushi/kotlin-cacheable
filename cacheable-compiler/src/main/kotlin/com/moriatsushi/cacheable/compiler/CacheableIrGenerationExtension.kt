@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 class CacheableIrGenerationExtension : IrGenerationExtension {
     override fun generate(moduleFragment: IrModuleFragment, pluginContext: IrPluginContext) {
         moduleFragment.transformChildrenVoid(
-            CacheableIrElementTransformer(pluginContext)
+            CacheableIrElementTransformer(pluginContext),
         )
     }
 }

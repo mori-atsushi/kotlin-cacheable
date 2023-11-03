@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 class CacheableCompilerPluginSupportPlugin : KotlinCompilerPluginSupportPlugin {
     override fun applyToCompilation(
-        kotlinCompilation: KotlinCompilation<*>
+        kotlinCompilation: KotlinCompilation<*>,
     ): Provider<List<SubpluginOption>> =
         kotlinCompilation.target.project.provider { emptyList() }
 
@@ -17,7 +17,7 @@ class CacheableCompilerPluginSupportPlugin : KotlinCompilerPluginSupportPlugin {
     override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
         groupId = "com.moriatsushi.cacheable",
         artifactId = "cacheable-compiler",
-        version = "0.0.1"
+        version = "0.0.1",
     )
 
     override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean = true

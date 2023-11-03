@@ -25,12 +25,12 @@ class CacheableIrElementTransformer(
         .referenceFunctions(
             CallableId(
                 packageName = FqName("kotlin.io"),
-                callableName = Name.identifier("println")
-            )
+                callableName = Name.identifier("println"),
+            ),
         )
         .single {
             it.owner.valueParameters.size == 1 &&
-                    it.owner.valueParameters.single().type.isNullableAny()
+                it.owner.valueParameters.single().type.isNullableAny()
         }
 
     override fun visitFunction(declaration: IrFunction): IrStatement {
@@ -64,7 +64,7 @@ class CacheableIrElementTransformer(
         startOffset = UNDEFINED_OFFSET,
         endOffset = UNDEFINED_OFFSET,
         type = pluginContext.irBuiltIns.stringType,
-        value = value
+        value = value,
     )
 
     companion object {
