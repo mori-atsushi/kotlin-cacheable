@@ -1,7 +1,10 @@
 [versions]
 kotlin = "1.9.20"
+ktlint = "0.48.1"
+spotless = "6.22.0"
 
 [libraries]
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
