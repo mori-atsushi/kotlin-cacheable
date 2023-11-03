@@ -11,7 +11,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/cacheable-compiler" />
             <option value="$PROJECT_DIR$/cacheable-core" />
+            <option value="$PROJECT_DIR$/cacheable-gradle-plugin" />
           </set>
         </option>
       </GradleProjectSettings>
