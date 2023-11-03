@@ -1,0 +1,6 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="cacheable-core-jvm">
+    <output-path>$PROJECT_DIR$/cacheable-core/build/libs</output-path>
+    <root id="archive" name="cacheable-core-jvm.jar" />
+  </artifact>
+</component>
