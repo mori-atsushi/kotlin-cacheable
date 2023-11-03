@@ -6,7 +6,7 @@ package com.moriatsushi.cacheable.internal
 internal class CacheStore {
     private var cache: Any? = null
 
-    fun cacheOrInvoke(): Int {
-        return 100
-    }
+    @Suppress("UNCHECKED_CAST")
+    inline fun <T> cacheOrInvoke(value: () -> T): T =
+        (cache ?: value().also { cache = it }) as T
 }

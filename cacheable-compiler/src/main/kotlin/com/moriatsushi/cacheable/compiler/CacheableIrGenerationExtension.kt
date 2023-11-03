@@ -2,7 +2,7 @@ package com.moriatsushi.cacheable.compiler
 
 import com.moriatsushi.cacheable.compiler.declaration.CacheableDeclarations
 import com.moriatsushi.cacheable.compiler.factory.IrCacheStoreFieldFactory
-import com.moriatsushi.cacheable.compiler.factory.IrCacheableExpressionBodyFactory
+import com.moriatsushi.cacheable.compiler.factory.IrCacheableFunctionFactory
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.backend.common.extensions.IrPluginContext
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
@@ -22,13 +22,14 @@ class CacheableIrGenerationExtension : IrGenerationExtension {
             pluginContext.irFactory,
             cacheableDeclarations,
         )
-        val irCacheableExpressionBodyFactory = IrCacheableExpressionBodyFactory(
+        val irCacheableFunctionFactory = IrCacheableFunctionFactory(
+            pluginContext.irBuiltIns,
             pluginContext.irFactory,
             cacheableDeclarations,
         )
         return CacheableIrElementTransformer(
             irCacheStoreFieldFactory = irCacheStoreFieldFactory,
-            irCacheableExpressionBodyFactory = irCacheableExpressionBodyFactory,
+            irCacheableFunctionFactory = irCacheableFunctionFactory,
         )
     }
 }
