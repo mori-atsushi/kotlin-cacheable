@@ -1,4 +1,5 @@
 pluginManagement {
+    includeBuild("build-logic")
     repositories {
         mavenLocal()
         google()
@@ -19,3 +20,4 @@ rootProject.name = "cacheable"
 include(":cacheable-compiler")
 include(":cacheable-core")
 include(":cacheable-gradle-plugin")
+include(":test")
