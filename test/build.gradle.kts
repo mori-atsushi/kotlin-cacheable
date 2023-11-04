@@ -7,12 +7,12 @@ plugins {
 
 kotlin {
     jvm()
-    // TODO: Enable the following targets
-    /*
     js(IR) {
         nodejs()
         browser()
     }
+    // TODO: Support Kotlin/WASM
+    /*
     @Suppress("OPT_IN_USAGE")
     wasmJs {
         binaries.executable()
