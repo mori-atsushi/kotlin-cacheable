@@ -13,6 +13,7 @@ auto-service-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", vers
 kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 
 [plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
