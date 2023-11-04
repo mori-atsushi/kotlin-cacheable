@@ -8,61 +8,55 @@ import org.jetbrains.kotlin.ir.builders.declarations.buildFun
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.IrFactory
 import org.jetbrains.kotlin.ir.declarations.IrField
-import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.declarations.createExpressionBody
+import org.jetbrains.kotlin.ir.declarations.createBlockBody
+import org.jetbrains.kotlin.ir.expressions.IrBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrBody
+import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrCallImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrFunctionExpressionImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetFieldImpl
-import org.jetbrains.kotlin.ir.symbols.impl.IrSimpleFunctionSymbolImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrReturnImpl
+import org.jetbrains.kotlin.ir.symbols.IrReturnTargetSymbol
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.typeWith
 import org.jetbrains.kotlin.name.Name
 
-class IrCacheableFunctionFactory(
+class IrCacheableFunctionBodyFactory(
     private val irBuiltIns: IrBuiltIns,
     private val irFactory: IrFactory,
     private val cacheableDeclarations: CacheableDeclarations,
 ) {
     fun create(
         originalFunction: IrSimpleFunction,
-        cacheStoreField: IrField,
-    ): IrFunction {
-        val outputFunction = originalFunction.copy()
-        outputFunction.body = createBody(
-            originalFunction = originalFunction,
-            outputFunction = outputFunction,
-            cacheStoreField = cacheStoreField,
-        )
-        return outputFunction
-    }
-
-    private fun createBody(
-        originalFunction: IrSimpleFunction,
-        outputFunction: IrSimpleFunction,
+        actualFunction: IrSimpleFunction,
         cacheStoreField: IrField,
     ): IrBody {
         val lambda = irFactory.buildFun {
             origin = IrDeclarationOrigin.LOCAL_FUNCTION_FOR_LAMBDA
             name = Name.special("<anonymous>")
-            returnType = originalFunction.returnType
+            returnType = actualFunction.returnType
             visibility = DescriptorVisibilities.LOCAL
         }
         val originalCall = IrCallImpl(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
             type = cacheStoreField.type,
-            symbol = originalFunction.symbol,
+            symbol = actualFunction.symbol,
             typeArgumentsCount = 0,
             valueArgumentsCount = 0,
         )
-        lambda.parent = outputFunction
-        lambda.body = irFactory.createExpressionBody(originalCall)
+        lambda.parent = originalFunction
+        lambda.body = createSingleLineBlockBody(
+            type = actualFunction.returnType,
+            returnTargetSymbol = lambda.symbol,
+            value = originalCall,
+        )
         val lambdaExpression = IrFunctionExpressionImpl(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
-            type = irBuiltIns.functionN(0).typeWith(listOf(originalFunction.returnType)),
+            type = irBuiltIns.functionN(0).typeWith(listOf(actualFunction.returnType)),
             function = lambda,
             origin = IrStatementOrigin.LAMBDA,
         )
@@ -82,30 +76,28 @@ class IrCacheableFunctionFactory(
             symbol = cacheStoreField.symbol,
             type = cacheStoreField.type,
         )
-        return irFactory.createExpressionBody(expressionCall)
+        return createSingleLineBlockBody(
+            type = originalFunction.returnType,
+            returnTargetSymbol = originalFunction.symbol,
+            value = expressionCall,
+        )
     }
 
-    private fun IrSimpleFunction.copy(): IrSimpleFunction {
-        val copied = irFactory.createSimpleFunction(
-            startOffset = startOffset,
-            endOffset = endOffset,
-            origin = origin,
-            name = name,
-            visibility = visibility,
-            isInline = isInline,
-            isExpect = isExpect,
-            returnType = returnType,
-            modality = modality,
-            symbol = IrSimpleFunctionSymbolImpl(),
-            isTailrec = isTailrec,
-            isSuspend = isSuspend,
-            isOperator = isOperator,
-            isInfix = isInfix,
-            isExternal = isExternal,
-            containerSource = containerSource,
-            isFakeOverride = isFakeOverride,
+    private fun createSingleLineBlockBody(
+        type: IrType,
+        returnTargetSymbol: IrReturnTargetSymbol,
+        value: IrExpression
+    ): IrBlockBody = irFactory.createBlockBody(
+        startOffset = UNDEFINED_OFFSET,
+        endOffset = UNDEFINED_OFFSET,
+        listOf(
+            IrReturnImpl(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                type = type,
+                returnTargetSymbol = returnTargetSymbol,
+                value = value,
+            )
         )
-        copied.parent = parent
-        return copied
-    }
+    )
 }
