@@ -40,9 +40,14 @@ kotlin {
     linuxArm64()
 
     sourceSets {
-        val commonTest by getting {
+        val commonMain by getting {
             dependencies {
                 implementation(project(":cacheable-core"))
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
                 implementation(kotlin("test"))
             }
         }
