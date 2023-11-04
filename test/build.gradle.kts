@@ -7,6 +7,8 @@ plugins {
 
 kotlin {
     jvm()
+    // TODO: Enable the following targets
+    /*
     js(IR) {
         nodejs()
         browser()
@@ -38,6 +40,7 @@ kotlin {
     mingwX64()
     linuxX64()
     linuxArm64()
+     */
 
     sourceSets {
         val commonMain by getting {
