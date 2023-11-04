@@ -1,8 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="test-js">
     <output-path>$PROJECT_DIR$/test/build/libs</output-path>
-    <root id="archive" name="test-js.jar">
-      <element id="module-output" name="cacheable.test.jsMain" />
-    </root>
+    <root id="archive" name="test-js.jar" />
   </artifact>
 </component>

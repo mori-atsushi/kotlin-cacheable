@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -7,18 +7,19 @@ plugins {
 
 kotlin {
     jvm()
-    // TODO: Enable the following targets
-    /*
     js(IR) {
         nodejs()
         browser()
     }
+    // TODO: Support Kotlin/WASM
+    /*
     @Suppress("OPT_IN_USAGE")
     wasmJs {
         binaries.executable()
         nodejs()
         browser()
     }
+    */
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -40,7 +41,6 @@ kotlin {
     mingwX64()
     linuxX64()
     linuxArm64()
-     */
 
     sourceSets {
         val commonMain by getting {
