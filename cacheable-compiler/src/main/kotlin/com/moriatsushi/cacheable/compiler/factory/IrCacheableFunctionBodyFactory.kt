@@ -86,7 +86,7 @@ class IrCacheableFunctionBodyFactory(
     private fun createSingleLineBlockBody(
         type: IrType,
         returnTargetSymbol: IrReturnTargetSymbol,
-        value: IrExpression
+        value: IrExpression,
     ): IrBlockBody = irFactory.createBlockBody(
         startOffset = UNDEFINED_OFFSET,
         endOffset = UNDEFINED_OFFSET,
@@ -97,7 +97,7 @@ class IrCacheableFunctionBodyFactory(
                 type = type,
                 returnTargetSymbol = returnTargetSymbol,
                 value = value,
-            )
-        )
+            ),
+        ),
     )
 }

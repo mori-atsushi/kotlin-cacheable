@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.ir.symbols.impl.IrSimpleFunctionSymbolImpl
 import org.jetbrains.kotlin.name.Name
 
 class IrActualFunctionFactory(
-    private val irFactory: IrFactory
+    private val irFactory: IrFactory,
 ) {
     fun create(originalFunction: IrSimpleFunction): IrSimpleFunction {
         val actualFunction = originalFunction.copy()
