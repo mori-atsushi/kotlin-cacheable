@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -19,6 +19,7 @@ kotlin {
         nodejs()
         browser()
     }
+    */
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -40,7 +41,6 @@ kotlin {
     mingwX64()
     linuxX64()
     linuxArm64()
-     */
 
     sourceSets {
         val commonMain by getting {
