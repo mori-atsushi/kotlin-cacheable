@@ -1,5 +1,8 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    id("com.moriatsushi.cacheable") version "0.0.1"
 }
 
 kotlin {
@@ -44,4 +47,8 @@ kotlin {
             }
         }
     }
+}
+
+tasks.withType(KotlinCompile::class).all {
+    dependsOn(":cacheable-compiler:publishToMavenLocal")
 }
