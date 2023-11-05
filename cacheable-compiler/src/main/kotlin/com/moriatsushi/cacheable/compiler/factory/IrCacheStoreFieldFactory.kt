@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.createExpressionBody
 import org.jetbrains.kotlin.ir.expressions.IrStatementOrigin
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
+import org.jetbrains.kotlin.ir.util.isTopLevel
 import org.jetbrains.kotlin.name.Name
 
 class IrCacheStoreFieldFactory(
@@ -18,10 +19,10 @@ class IrCacheStoreFieldFactory(
 ) {
     fun create(function: IrFunction): IrField {
         val field = irFactory.buildField {
-            name = Name.identifier("_${function.name.identifier}_cache")
+            name = Name.identifier(function.name.identifier + CACHE_STORE_SUFFIX)
             type = cacheableDeclarations.cacheStoreClassDeclaration.irType
             visibility = DescriptorVisibilities.PRIVATE
-            isStatic = true
+            isStatic = function.isTopLevel
         }
         field.initializer = irFactory.createExpressionBody(
             IrConstructorCallImpl(
@@ -37,5 +38,9 @@ class IrCacheStoreFieldFactory(
         )
         field.parent = function.parent
         return field
+    }
+
+    companion object {
+        private const val CACHE_STORE_SUFFIX = "\$cacheStore"
     }
 }

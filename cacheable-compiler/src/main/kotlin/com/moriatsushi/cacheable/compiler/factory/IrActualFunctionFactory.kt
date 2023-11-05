@@ -1,42 +1,34 @@
 package com.moriatsushi.cacheable.compiler.factory
 
 import org.jetbrains.kotlin.backend.common.ir.moveBodyTo
+import org.jetbrains.kotlin.ir.builders.declarations.buildFun
 import org.jetbrains.kotlin.ir.declarations.IrFactory
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
-import org.jetbrains.kotlin.ir.symbols.impl.IrSimpleFunctionSymbolImpl
+import org.jetbrains.kotlin.ir.util.copyParameterDeclarationsFrom
 import org.jetbrains.kotlin.name.Name
 
 class IrActualFunctionFactory(
     private val irFactory: IrFactory,
 ) {
-    fun create(originalFunction: IrSimpleFunction): IrSimpleFunction {
-        val actualFunction = originalFunction.copy()
-        actualFunction.name = Name.identifier("_${originalFunction.name}_actual")
-        actualFunction.body = originalFunction.moveBodyTo(actualFunction)
-        return actualFunction
+    fun create(originalFunction: IrSimpleFunction): IrSimpleFunction =
+        originalFunction.renamed(
+            Name.identifier(originalFunction.name.identifier + ACTUAL_SUFFIX),
+        )
+
+    private fun IrSimpleFunction.renamed(name: Name): IrSimpleFunction {
+        val original = this
+        val copied = irFactory.buildFun {
+            this.updateFrom(original)
+            this.name = name
+            this.returnType = original.returnType
+        }
+        copied.parent = original.parent
+        copied.copyParameterDeclarationsFrom(original)
+        copied.body = original.moveBodyTo(copied)
+        return copied
     }
 
-    private fun IrSimpleFunction.copy(): IrSimpleFunction {
-        val copied = irFactory.createSimpleFunction(
-            startOffset = startOffset,
-            endOffset = endOffset,
-            origin = origin,
-            name = name,
-            visibility = visibility,
-            isInline = isInline,
-            isExpect = isExpect,
-            returnType = returnType,
-            modality = modality,
-            symbol = IrSimpleFunctionSymbolImpl(),
-            isTailrec = isTailrec,
-            isSuspend = isSuspend,
-            isOperator = isOperator,
-            isInfix = isInfix,
-            isExternal = isExternal,
-            containerSource = containerSource,
-            isFakeOverride = isFakeOverride,
-        )
-        copied.parent = parent
-        return copied
+    companion object {
+        private const val ACTUAL_SUFFIX = "\$actual"
     }
 }
