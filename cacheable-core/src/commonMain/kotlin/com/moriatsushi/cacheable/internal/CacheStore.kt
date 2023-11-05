@@ -2,6 +2,8 @@ package com.moriatsushi.cacheable.internal
 
 import com.moriatsushi.cacheable.CacheableConfiguration
 import com.moriatsushi.cacheable.UNLIMITED_CACHE_COUNT
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 
 /**
  * A cache store.
@@ -10,12 +12,13 @@ internal class CacheStore(
     private val maxCount: Int,
     private val currentEpochMillis: () -> Long,
 ) {
+    private val lock = SynchronizedObject()
+    private var cacheMap = mutableMapOf<Any, CacheEntry>()
+
     constructor(maxCount: Int = UNLIMITED_CACHE_COUNT) : this(
         maxCount,
         { CacheableConfiguration.timeProvider.currentEpochMillis },
     )
-
-    private var cacheMap = mutableMapOf<Any, CacheEntry>()
 
     inline fun <T> cacheOrInvoke(vararg key: Any?, value: () -> T): T {
         val keyList = key.toList()
@@ -30,20 +33,22 @@ internal class CacheStore(
         return newValue
     }
 
-    private fun getCacheEntry(key: Any): CacheEntry? {
-        val entry = cacheMap[key]
-        entry?.lastAccessedEpochMillis = currentEpochMillis()
-        return entry
+    private fun getCacheEntry(key: Any): CacheEntry? = synchronized(lock) {
+        cacheMap[key].also {
+            it?.lastAccessedEpochMillis = currentEpochMillis()
+        }
     }
 
     private fun saveCacheEntry(key: Any, value: Any?) {
-        if (maxCount != UNLIMITED_CACHE_COUNT && cacheMap.size >= maxCount) {
-            val oldestEntry = cacheMap.minByOrNull { it.value.lastAccessedEpochMillis }
-            if (oldestEntry != null) {
-                cacheMap.remove(oldestEntry.key)
+        synchronized(lock) {
+            if (maxCount != UNLIMITED_CACHE_COUNT && cacheMap.size >= maxCount) {
+                val oldestEntry = cacheMap.minByOrNull { it.value.lastAccessedEpochMillis }
+                if (oldestEntry != null) {
+                    cacheMap.remove(oldestEntry.key)
+                }
             }
-        }
 
-        cacheMap[key] = CacheEntry(value, currentEpochMillis())
+            cacheMap[key] = CacheEntry(value, currentEpochMillis())
+        }
     }
 }
