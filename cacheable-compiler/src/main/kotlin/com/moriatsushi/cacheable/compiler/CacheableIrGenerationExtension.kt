@@ -30,6 +30,7 @@ class CacheableIrGenerationExtension : IrGenerationExtension {
             cacheableDeclarations,
         )
         return CacheableIrElementTransformer(
+            cacheableDeclarations = cacheableDeclarations,
             irCacheStoreFieldFactory = irCacheStoreFieldFactory,
             irActualFunctionFactory = irActualFunctionFactory,
             irCacheableFunctionBodyFactory = irCacheableFunctionBodyFactory,

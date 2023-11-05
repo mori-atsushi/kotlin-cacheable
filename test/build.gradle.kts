@@ -33,11 +33,6 @@ kotlin {
     tvosX64()
     tvosSimulatorArm64()
 
-    androidNativeArm32()
-    androidNativeArm64()
-    androidNativeX86()
-    androidNativeX64()
-
     mingwX64()
     linuxX64()
     linuxArm64()

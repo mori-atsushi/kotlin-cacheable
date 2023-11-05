@@ -22,17 +22,16 @@ kotlin {
     tvosX64()
     tvosSimulatorArm64()
 
-    androidNativeArm32()
-    androidNativeArm64()
-    androidNativeX86()
-    androidNativeX64()
-
     mingwX64()
     linuxX64()
     linuxArm64()
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.kotlinx.datetime)
+            }
+        }
 
         val commonTest by getting {
             dependencies {
