@@ -1,11 +1,11 @@
 package com.moriatsushi.cacheable.internal
 
-import kotlinx.datetime.Clock
-
 /**
  * A cache store.
  */
-internal class CacheStore {
+internal class CacheStore(
+    private val timeProvider: TimeProvider = DefaultTimeProvider,
+) {
     private var cacheMap = mutableMapOf<Any, CacheEntry>()
 
     inline fun <T> cacheOrInvoke(vararg key: Any?, value: () -> T): T {
@@ -23,14 +23,11 @@ internal class CacheStore {
 
     private fun getCacheEntry(key: Any): CacheEntry? {
         val entry = cacheMap[key]
-        entry?.lastAccessedEpochMillis = currentEpochMillis()
+        entry?.lastAccessedEpochMillis = timeProvider.currentEpochMillis
         return entry
     }
 
     private fun saveCacheEntry(key: Any, value: Any?) {
-        cacheMap[key] = CacheEntry(value, currentEpochMillis())
+        cacheMap[key] = CacheEntry(value, timeProvider.currentEpochMillis)
     }
-
-    private fun currentEpochMillis(): Long =
-        Clock.System.now().toEpochMilliseconds()
 }

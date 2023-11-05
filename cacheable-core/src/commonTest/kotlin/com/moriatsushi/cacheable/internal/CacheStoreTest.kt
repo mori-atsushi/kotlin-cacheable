@@ -6,7 +6,7 @@ import kotlin.test.assertEquals
 class CacheStoreTest {
     @Test
     fun testCacheOrInvoke() {
-        val cacheStore = CacheStore()
+        val cacheStore = CacheStore(FakeTimeProvider())
         val result1 = cacheStore.cacheOrInvoke { "value1" }
         assertEquals("value1", result1)
 
@@ -16,7 +16,7 @@ class CacheStoreTest {
 
     @Test
     fun testCacheOrInvoke_withKey() {
-        val cacheStore = CacheStore()
+        val cacheStore = CacheStore(FakeTimeProvider())
         val result1 = cacheStore.cacheOrInvoke("key1") { "value1" }
         assertEquals("value1", result1)
 
@@ -32,7 +32,7 @@ class CacheStoreTest {
 
     @Test
     fun testCacheOrInvoke_cacheNull() {
-        val cacheStore = CacheStore()
+        val cacheStore = CacheStore(FakeTimeProvider())
         val result1 = cacheStore.cacheOrInvoke<String?> { null }
         assertEquals(null, result1)
 
