@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.ir.declarations.IrDeclarationParent
 import org.jetbrains.kotlin.ir.declarations.IrFactory
 import org.jetbrains.kotlin.ir.declarations.IrField
 import org.jetbrains.kotlin.ir.declarations.IrSimpleFunction
+import org.jetbrains.kotlin.ir.declarations.IrValueParameter
 import org.jetbrains.kotlin.ir.declarations.createBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrBody
@@ -22,6 +23,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrFunctionExpressionImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetFieldImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrReturnImpl
+import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrReturnTargetSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.typeWith
@@ -47,6 +49,7 @@ class IrCacheableFunctionBodyFactory(
         }
         val actualCall = createActualCall(
             actualFunction = actualFunction,
+            valueParameters = originalFunction.valueParameters,
             thisReceiver = thisReceiver,
         )
         val lambdaExpression = createLambdaExpression(
@@ -55,8 +58,10 @@ class IrCacheableFunctionBodyFactory(
         )
         val cacheStoreCall = createCacheStoreCall(
             cacheStoreField = cacheStoreField,
-            thisReceiver = thisReceiver,
+            valueParameters = originalFunction.valueParameters,
             lambdaExpression = lambdaExpression,
+            thisReceiver = thisReceiver,
+            typeArgument = originalFunction.returnType,
         )
         return createSingleLineBlockBody(
             type = originalFunction.returnType,
@@ -67,17 +72,28 @@ class IrCacheableFunctionBodyFactory(
 
     private fun createActualCall(
         actualFunction: IrSimpleFunction,
+        valueParameters: List<IrValueParameter>,
         thisReceiver: IrExpression?,
     ): IrCall {
+        assert(valueParameters.size == actualFunction.valueParameters.size)
         val actualCall = IrCallImpl(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
             type = actualFunction.returnType,
             symbol = actualFunction.symbol,
             typeArgumentsCount = 0,
-            valueArgumentsCount = 0,
+            valueArgumentsCount = actualFunction.valueParameters.size,
         )
         actualCall.dispatchReceiver = thisReceiver
+        for (valueParameter in valueParameters) {
+            val argument = IrGetValueImpl(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                symbol = valueParameter.symbol,
+                type = valueParameter.type,
+            )
+            actualCall.putValueArgument(valueParameter.index, argument)
+        }
         return actualCall
     }
 
@@ -108,8 +124,10 @@ class IrCacheableFunctionBodyFactory(
 
     private fun createCacheStoreCall(
         cacheStoreField: IrField,
-        thisReceiver: IrExpression?,
+        valueParameters: List<IrValueParameter>,
         lambdaExpression: IrExpression,
+        thisReceiver: IrExpression?,
+        typeArgument: IrType,
     ): IrCall {
         val expressionCall = IrCallImpl(
             startOffset = UNDEFINED_OFFSET,
@@ -117,8 +135,8 @@ class IrCacheableFunctionBodyFactory(
             type = cacheStoreField.type,
             symbol = cacheableDeclarations.cacheStoreClassDeclaration
                 .irCacheOrInvokeFunctionSymbol,
-            typeArgumentsCount = 0,
-            valueArgumentsCount = 1,
+            typeArgumentsCount = 1,
+            valueArgumentsCount = 2,
         )
         val dispatchReceiver = IrGetFieldImpl(
             startOffset = UNDEFINED_OFFSET,
@@ -128,7 +146,23 @@ class IrCacheableFunctionBodyFactory(
         )
         dispatchReceiver.receiver = thisReceiver
         expressionCall.dispatchReceiver = dispatchReceiver
-        expressionCall.putValueArgument(0, lambdaExpression)
+        val keyArgument = IrVarargImpl(
+            startOffset = UNDEFINED_OFFSET,
+            endOffset = UNDEFINED_OFFSET,
+            type = irBuiltIns.arrayClass.typeWith(irBuiltIns.anyNType),
+            varargElementType = irBuiltIns.anyNType,
+            elements = valueParameters.map {
+                IrGetValueImpl(
+                    startOffset = UNDEFINED_OFFSET,
+                    endOffset = UNDEFINED_OFFSET,
+                    symbol = it.symbol,
+                    type = it.type,
+                )
+            }
+        )
+        expressionCall.putValueArgument(0, keyArgument)
+        expressionCall.putValueArgument(1, lambdaExpression)
+        expressionCall.putTypeArgument(0, typeArgument)
         return expressionCall
     }
 
