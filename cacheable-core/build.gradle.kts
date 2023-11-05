@@ -32,7 +32,11 @@ kotlin {
     linuxArm64()
 
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.kotlinx.datetime)
+            }
+        }
 
         val commonTest by getting {
             dependencies {
