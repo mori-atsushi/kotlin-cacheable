@@ -21,9 +21,11 @@ class IrCacheStoreFieldFactory(
             visibility = DescriptorVisibilities.PRIVATE
             isStatic = function.isTopLevel
         }
-        field.initializer = irFactory.createExpressionBody(
-            cacheableDeclarations.cacheStoreClassDeclaration.constructorCall,
-        )
+        val maxCountExpression = cacheableDeclarations.cacheableAnnotationDeclaration
+            .findMaxCountExpression(function)
+        val constructorCall = cacheableDeclarations.cacheStoreClassDeclaration
+            .createConstructorCall(maxCountExpression)
+        field.initializer = irFactory.createExpressionBody(constructorCall)
         field.parent = function.parent
         return field
     }

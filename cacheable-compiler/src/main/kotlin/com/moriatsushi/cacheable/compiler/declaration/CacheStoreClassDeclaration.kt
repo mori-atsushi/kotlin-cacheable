@@ -31,22 +31,29 @@ class CacheStoreClassDeclaration(
         get() = irClassSymbol.createType(false, emptyList())
 
     private val irConstructorSymbol: IrConstructorSymbol
-        get() = irClassSymbol.constructors.single()
+        get() = irClassSymbol.constructors.single {
+            it.owner.valueParameters.size == 1
+        }
 
     private val irCacheOrInvokeFunctionSymbol: IrSimpleFunctionSymbol
         get() = irClassSymbol.functions
             .single { it.owner.name == cacheOrInvokedFunctionName }
 
-    val constructorCall: IrConstructorCall
-        get() = IrConstructorCallImpl(
+    fun createConstructorCall(maxCountExpression: IrExpression?): IrConstructorCall {
+        val call = IrConstructorCallImpl(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
             type = irType,
             symbol = irConstructorSymbol,
             typeArgumentsCount = 0,
             constructorTypeArgumentsCount = 0,
-            valueArgumentsCount = 0,
+            valueArgumentsCount = 1,
         )
+        if (maxCountExpression != null) {
+            call.putValueArgument(0, maxCountExpression)
+        }
+        return call
+    }
 
     fun createCacheOrInvokeFunctionCall(
         typeArgument: IrType,

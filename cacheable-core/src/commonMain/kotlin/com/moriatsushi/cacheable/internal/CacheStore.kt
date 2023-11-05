@@ -7,11 +7,14 @@ import com.moriatsushi.cacheable.UNLIMITED_CACHE_COUNT
  * A cache store.
  */
 internal class CacheStore(
-    private val maxCount: Int = UNLIMITED_CACHE_COUNT,
-    private val currentEpochMillis: () -> Long = {
-        CacheableConfiguration.timeProvider.currentEpochMillis
-    },
+    private val maxCount: Int,
+    private val currentEpochMillis: () -> Long,
 ) {
+    constructor(maxCount: Int = UNLIMITED_CACHE_COUNT) : this(
+        maxCount,
+        { CacheableConfiguration.timeProvider.currentEpochMillis },
+    )
+
     private var cacheMap = mutableMapOf<Any, CacheEntry>()
 
     inline fun <T> cacheOrInvoke(vararg key: Any?, value: () -> T): T {
