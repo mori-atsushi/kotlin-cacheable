@@ -46,12 +46,14 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(project(":cacheable-core"))
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
 
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
     }
