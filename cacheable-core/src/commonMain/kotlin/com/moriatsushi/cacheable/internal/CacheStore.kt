@@ -6,7 +6,7 @@ package com.moriatsushi.cacheable.internal
 internal class CacheStore {
     private var cacheMap = mutableMapOf<List<*>, Any?>()
 
-    inline fun <T> cacheOrInvoke(vararg key: Any, value: () -> T): T {
+    inline fun <T> cacheOrInvoke(vararg key: Any?, value: () -> T): T {
         val keyList = key.toList()
         val result = if (cacheMap.containsKey(keyList)) {
             cacheMap[keyList]
