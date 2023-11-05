@@ -23,7 +23,6 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrFunctionExpressionImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetFieldImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrReturnImpl
-import org.jetbrains.kotlin.ir.expressions.impl.IrVarargImpl
 import org.jetbrains.kotlin.ir.symbols.IrReturnTargetSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.typeWith
@@ -129,15 +128,6 @@ class IrCacheableFunctionBodyFactory(
         thisReceiver: IrExpression?,
         typeArgument: IrType,
     ): IrCall {
-        val expressionCall = IrCallImpl(
-            startOffset = UNDEFINED_OFFSET,
-            endOffset = UNDEFINED_OFFSET,
-            type = cacheStoreField.type,
-            symbol = cacheableDeclarations.cacheStoreClassDeclaration
-                .irCacheOrInvokeFunctionSymbol,
-            typeArgumentsCount = 1,
-            valueArgumentsCount = 2,
-        )
         val dispatchReceiver = IrGetFieldImpl(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
@@ -145,25 +135,21 @@ class IrCacheableFunctionBodyFactory(
             type = cacheStoreField.type,
         )
         dispatchReceiver.receiver = thisReceiver
-        expressionCall.dispatchReceiver = dispatchReceiver
-        val keyArgument = IrVarargImpl(
-            startOffset = UNDEFINED_OFFSET,
-            endOffset = UNDEFINED_OFFSET,
-            type = irBuiltIns.arrayClass.typeWith(irBuiltIns.anyNType),
-            varargElementType = irBuiltIns.anyNType,
-            elements = valueParameters.map {
-                IrGetValueImpl(
-                    startOffset = UNDEFINED_OFFSET,
-                    endOffset = UNDEFINED_OFFSET,
-                    symbol = it.symbol,
-                    type = it.type,
-                )
-            }
-        )
-        expressionCall.putValueArgument(0, keyArgument)
-        expressionCall.putValueArgument(1, lambdaExpression)
-        expressionCall.putTypeArgument(0, typeArgument)
-        return expressionCall
+        val keyElements = valueParameters.map {
+            IrGetValueImpl(
+                startOffset = UNDEFINED_OFFSET,
+                endOffset = UNDEFINED_OFFSET,
+                symbol = it.symbol,
+                type = it.type,
+            )
+        }
+        return cacheableDeclarations.cacheStoreClassDeclaration
+            .createCacheOrInvokeFunctionCall(
+                typeArgument = typeArgument,
+                keyElements = keyElements,
+                blockExpression = lambdaExpression,
+                dispatchReceiver = dispatchReceiver,
+            )
     }
 
     private fun createSingleLineBlockBody(

@@ -16,7 +16,6 @@ fun cacheableString(): String {
     return globalCount.toString()
 }
 
-
 @Cacheable
 fun cacheableIntWithKey(key: String): Int {
     globalCount++
