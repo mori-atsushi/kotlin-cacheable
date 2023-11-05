@@ -1,5 +1,6 @@
 package com.moriatsushi.cacheable.internal
 
+import com.moriatsushi.cacheable.CacheableConfiguration
 import com.moriatsushi.cacheable.UNLIMITED_CACHE_COUNT
 
 /**
@@ -7,7 +8,9 @@ import com.moriatsushi.cacheable.UNLIMITED_CACHE_COUNT
  */
 internal class CacheStore(
     private val maxCount: Int = UNLIMITED_CACHE_COUNT,
-    private val timeProvider: TimeProvider = DefaultTimeProvider,
+    private val currentEpochMillis: () -> Long = {
+        CacheableConfiguration.timeProvider.currentEpochMillis
+    },
 ) {
     private var cacheMap = mutableMapOf<Any, CacheEntry>()
 
@@ -26,7 +29,7 @@ internal class CacheStore(
 
     private fun getCacheEntry(key: Any): CacheEntry? {
         val entry = cacheMap[key]
-        entry?.lastAccessedEpochMillis = timeProvider.currentEpochMillis
+        entry?.lastAccessedEpochMillis = currentEpochMillis()
         return entry
     }
 
@@ -38,6 +41,6 @@ internal class CacheStore(
             }
         }
 
-        cacheMap[key] = CacheEntry(value, timeProvider.currentEpochMillis)
+        cacheMap[key] = CacheEntry(value, currentEpochMillis())
     }
 }
