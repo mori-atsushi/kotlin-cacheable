@@ -4,9 +4,16 @@ package com.moriatsushi.cacheable.internal
  * A cache store.
  */
 internal class CacheStore {
-    private var cache: Any? = null
+    private var cacheMap = mutableMapOf<List<*>, Any?>()
 
-    @Suppress("UNCHECKED_CAST")
-    inline fun <T> cacheOrInvoke(value: () -> T): T =
-        (cache ?: value().also { cache = it }) as T
+    inline fun <T> cacheOrInvoke(vararg key: Any?, value: () -> T): T {
+        val keyList = key.toList()
+        val result = if (cacheMap.containsKey(keyList)) {
+            cacheMap[keyList]
+        } else {
+            value().also { cacheMap[keyList] = it }
+        }
+        @Suppress("UNCHECKED_CAST")
+        return result as T
+    }
 }

@@ -8,12 +8,6 @@ kotlin {
         nodejs()
         browser()
     }
-    @Suppress("OPT_IN_USAGE")
-    wasmJs {
-        binaries.executable()
-        nodejs()
-        browser()
-    }
     iosX64()
     iosArm64()
     iosSimulatorArm64()

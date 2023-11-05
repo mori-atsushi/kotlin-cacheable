@@ -2,16 +2,22 @@ package com.moriatsushi.cacheable.test
 
 import com.moriatsushi.cacheable.Cacheable
 
-private var count = 0
+var globalCount = 0
 
 @Cacheable
 fun cacheableInt(): Int {
-    count++
-    return count
+    globalCount++
+    return globalCount
 }
 
 @Cacheable
 fun cacheableString(): String {
-    count++
-    return count.toString()
+    globalCount++
+    return globalCount.toString()
+}
+
+@Cacheable
+fun cacheableIntWithKey(key: String): Int {
+    globalCount++
+    return globalCount
 }
