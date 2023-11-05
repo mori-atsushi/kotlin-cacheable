@@ -5,6 +5,7 @@ kotlin = "1.9.20"
 ktlint = "0.48.1"
 maven-publish = "0.25.3"
 spotless = "6.22.0"
+kotlinx-atomicfu = "0.22.0"
 kotlinx-coroutines = "1.7.3"
 kotlinx-datetime = "0.4.1"
 ksp = "1.9.20-1.0.14"
@@ -20,6 +21,7 @@ kotlinx-datetime = {  group = "org.jetbrains.kotlinx", name = "kotlinx-datetime"
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinx-atomicfu = { id = "kotlinx-atomicfu", version.ref = "kotlinx-atomicfu" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
