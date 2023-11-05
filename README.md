@@ -48,7 +48,7 @@ You can use `@Cacheable` annotation to cache the result of specified functions.
 When you call a function with this annotation, it will return the cached value if the function is
 called with the same arguments.
 
-Here's an example of using the `@Cacheable` annotation:
+Here is an example:
 
 ```kotlin
 @Cacheable
@@ -62,24 +62,32 @@ This is equivalent to the following code:
 ```kotlin
 private var cache = mutableMapOf<String, Something>()
 
-fun getSomething(key: String): Something {
-    if (cache.containsKey(key)) {
-        return cache[key]!!
-    }
-    val value = /* ... */
-    cache[key] = value
-    return value
-}
+fun getSomething(key: String): Something =
+    cache.getOrPut(key) { /* ... */ }
 ```
 
 If you use the cacheable function within a class, the cache is only shared within an instance of the
 class.
 
+In addition, if you specify `maxCount` parameter, the number of cached values will be limited to the
+specified value.
+If the number of cached values exceeds the specified value, the last accessed value will be deleted.
+
 ```kotlin
 class SomeClass {
-    @Cacheable
+    @Cacheable(maxCount = 10)
     fun getSomething(key: String): Something {
         // ...
     }
+}
+```
+
+You can also use `@Cacheable` annotation for a suspend function.
+
+```kotlin
+class Repository(private val api: Api) {
+    @Cacheable(maxCount = 10)
+    suspend fun getUser(id: String): User =
+        api.getUser(id)
 }
 ```
