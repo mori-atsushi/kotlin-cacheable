@@ -29,7 +29,7 @@ Enable the Gradle plugin for the module where you want to use this library.
 // build.gradle.kts
 plugins {
     kotlin(/* ... */)
-    id("com.moriatsushi.cacheable") version "0.0.1"
+    id("com.moriatsushi.cacheable") version "0.0.2"
 }
 ```
 
