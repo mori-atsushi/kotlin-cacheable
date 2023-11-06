@@ -38,7 +38,7 @@ You also need to add the `cacheable-core` dependency to the module.
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("com.moriatsushi.cacheable:cacheable-core:0.1.0")
+    implementation("com.moriatsushi.cacheable:cacheable-core:0.0.2")
 }
 ```
 
@@ -71,7 +71,8 @@ class.
 
 In addition, if you specify `maxCount` parameter, the number of cached values will be limited to the
 specified value.
-If the number of cached values exceeds the specified value, the last accessed value will be deleted.
+If the number of cached values exceeds the specified value, the cache with the oldest access time
+will be removed.
 
 ```kotlin
 class SomeClass {
