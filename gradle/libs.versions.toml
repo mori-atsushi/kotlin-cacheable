@@ -1,7 +1,7 @@
 [versions]
 auto-service = "1.1.1"
 auto-service-ksp = "1.1.0"
-kotlin = "1.9.20"
+kotlin = "1.9.21"
 ktlint = "0.48.1"
 maven-publish = "0.25.3"
 spotless = "6.23.3"
