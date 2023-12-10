@@ -30,6 +30,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation(libs.stately.concurrent.collections)
                 implementation(libs.kotlinx.datetime)
             }
         }
