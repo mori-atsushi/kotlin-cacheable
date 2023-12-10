@@ -1,9 +1,8 @@
 package com.moriatsushi.cacheable.internal
 
+import co.touchlab.stately.collections.ConcurrentMutableMap
 import com.moriatsushi.cacheable.CacheableConfiguration
 import com.moriatsushi.cacheable.UNLIMITED_CACHE_COUNT
-import kotlinx.atomicfu.locks.SynchronizedObject
-import kotlinx.atomicfu.locks.synchronized
 
 /**
  * A cache store.
@@ -12,8 +11,7 @@ internal class CacheStore(
     private val maxCount: Int,
     private val currentEpochMillis: () -> Long,
 ) {
-    private val lock = SynchronizedObject()
-    private var cacheMap = mutableMapOf<Any, CacheEntry>()
+    private val cacheMap = ConcurrentMutableMap<Any, CacheEntry>()
 
     constructor(maxCount: Int = UNLIMITED_CACHE_COUNT) : this(
         maxCount,
@@ -33,22 +31,25 @@ internal class CacheStore(
         return newValue
     }
 
-    private fun getCacheEntry(key: Any): CacheEntry? = synchronized(lock) {
-        cacheMap[key].also {
-            it?.lastAccessedEpochMillis = currentEpochMillis()
+    private fun getCacheEntry(key: Any): CacheEntry? =
+        cacheMap.block { map ->
+            val entry = map[key]
+            if (entry != null) {
+                entry.lastAccessedEpochMillis = currentEpochMillis()
+            }
+            entry
         }
-    }
 
     private fun saveCacheEntry(key: Any, value: Any?) {
-        synchronized(lock) {
-            if (maxCount != UNLIMITED_CACHE_COUNT && cacheMap.size >= maxCount) {
-                val oldestEntry = cacheMap.minByOrNull { it.value.lastAccessedEpochMillis }
+        cacheMap.block { map ->
+            if (maxCount != UNLIMITED_CACHE_COUNT && map.size >= maxCount) {
+                val oldestEntry = map.minByOrNull { it.value.lastAccessedEpochMillis }
                 if (oldestEntry != null) {
-                    cacheMap.remove(oldestEntry.key)
+                    map.remove(oldestEntry.key)
                 }
             }
 
-            cacheMap[key] = CacheEntry(value, currentEpochMillis())
+            map[key] = CacheEntry(value, currentEpochMillis())
         }
     }
 }

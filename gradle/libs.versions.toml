@@ -5,6 +5,7 @@ kotlin = "1.9.21"
 ktlint = "0.48.1"
 maven-publish = "0.25.3"
 spotless = "6.23.3"
+stately = "2.0.6"
 kotlinx-atomicfu = "0.22.0"
 kotlinx-coroutines = "1.7.3"
 kotlinx-datetime = "0.5.0"
@@ -13,6 +14,7 @@ ksp = "1.9.21-1.0.15"
 [libraries]
 auto-service-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service" }
 auto-service-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version.ref = "auto-service-ksp" }
+stately-concurrent-collections = { module = "co.touchlab:stately-concurrent-collections", version.ref = "stately" }
 kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
