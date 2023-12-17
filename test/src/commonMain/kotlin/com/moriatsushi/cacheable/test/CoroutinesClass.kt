@@ -19,4 +19,11 @@ class CoroutinesClass {
         count++
         return count
     }
+
+    @Cacheable(lock = true)
+    suspend fun cacheableWithLock(): Int {
+        delay(100)
+        count++
+        return count
+    }
 }

@@ -1,10 +1,10 @@
 package com.moriatsushi.cacheable.internal
 
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class CoroutineCacheStoreTest {
     @Test
