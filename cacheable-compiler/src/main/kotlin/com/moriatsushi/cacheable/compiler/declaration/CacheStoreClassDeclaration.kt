@@ -32,7 +32,8 @@ class CacheStoreClassDeclaration(
 
     private val irConstructorSymbol: IrConstructorSymbol
         get() = irClassSymbol.constructors.single {
-            it.owner.valueParameters.size == 1
+            it.owner.valueParameters.size == 1 &&
+                it.owner.valueParameters.first().type == irBuiltIns.intType
         }
 
     private val irCacheOrInvokeFunctionSymbol: IrSimpleFunctionSymbol
