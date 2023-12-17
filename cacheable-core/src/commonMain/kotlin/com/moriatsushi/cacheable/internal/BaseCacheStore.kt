@@ -18,16 +18,15 @@ internal class BaseCacheStore(
         { CacheableConfiguration.timeProvider.currentEpochMillis },
     )
 
-    inline fun <T> cacheOrInvoke(vararg key: Any?, value: () -> T): T {
-        val keyList = key.toList()
-        val cacheEntry = getCacheEntry(keyList)
+    inline fun <T> cacheOrInvoke(key: Any, value: () -> T): T {
+        val cacheEntry = getCacheEntry(key)
         if (cacheEntry != null) {
             @Suppress("UNCHECKED_CAST")
             return cacheEntry.value as T
         }
 
         val newValue = value()
-        saveCacheEntry(keyList, newValue)
+        saveCacheEntry(key, newValue)
         return newValue
     }
 

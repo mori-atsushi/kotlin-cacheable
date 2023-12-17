@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.ir.declarations.IrFactory
 import org.jetbrains.kotlin.ir.declarations.IrField
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.declarations.createExpressionBody
+import org.jetbrains.kotlin.ir.util.isSuspend
 import org.jetbrains.kotlin.ir.util.isTopLevel
 import org.jetbrains.kotlin.name.Name
 
@@ -17,14 +18,23 @@ class IrCacheStoreFieldFactory(
     fun create(function: IrFunction): IrField {
         val field = irFactory.buildField {
             name = Name.identifier(function.name.identifier + CACHE_STORE_SUFFIX)
-            type = cacheableDeclarations.cacheStoreClassDeclaration.irType
+            type = if (function.isSuspend) {
+                cacheableDeclarations.suspendCacheStoreClassDeclaration.irType
+            } else {
+                cacheableDeclarations.cacheStoreClassDeclaration.irType
+            }
             visibility = DescriptorVisibilities.PRIVATE
             isStatic = function.isTopLevel
         }
         val maxCountExpression = cacheableDeclarations.cacheableAnnotationDeclaration
             .findMaxCountExpression(function)
-        val constructorCall = cacheableDeclarations.cacheStoreClassDeclaration
-            .createConstructorCall(maxCountExpression)
+        val constructorCall = if (function.isSuspend) {
+            cacheableDeclarations.suspendCacheStoreClassDeclaration
+                .createConstructorCall(maxCountExpression)
+        } else {
+            cacheableDeclarations.cacheStoreClassDeclaration
+                .createConstructorCall(maxCountExpression)
+        }
         field.initializer = irFactory.createExpressionBody(constructorCall)
         field.parent = function.parent
         return field
