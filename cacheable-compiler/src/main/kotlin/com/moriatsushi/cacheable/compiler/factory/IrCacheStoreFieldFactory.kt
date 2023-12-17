@@ -19,7 +19,7 @@ class IrCacheStoreFieldFactory(
         val field = irFactory.buildField {
             name = Name.identifier(function.name.identifier + CACHE_STORE_SUFFIX)
             type = if (function.isSuspend) {
-                cacheableDeclarations.suspendCacheStoreClassDeclaration.irType
+                cacheableDeclarations.coroutineCacheStoreClassDeclaration.irType
             } else {
                 cacheableDeclarations.cacheStoreClassDeclaration.irType
             }
@@ -28,12 +28,14 @@ class IrCacheStoreFieldFactory(
         }
         val maxCountExpression = cacheableDeclarations.cacheableAnnotationDeclaration
             .findMaxCountExpression(function)
+        val lockExpression = cacheableDeclarations.cacheableAnnotationDeclaration
+            .findLockExpression(function)
         val constructorCall = if (function.isSuspend) {
-            cacheableDeclarations.suspendCacheStoreClassDeclaration
-                .createConstructorCall(maxCountExpression)
+            cacheableDeclarations.coroutineCacheStoreClassDeclaration
+                .createConstructorCall(maxCountExpression, lockExpression)
         } else {
             cacheableDeclarations.cacheStoreClassDeclaration
-                .createConstructorCall(maxCountExpression)
+                .createConstructorCall(maxCountExpression, lockExpression)
         }
         field.initializer = irFactory.createExpressionBody(constructorCall)
         field.parent = function.parent

@@ -12,7 +12,10 @@ internal class CoroutineCacheStore(
     private val lockStore: LockStore<Mutex> = LockStore.MutexStore,
     private val lock: Boolean = false,
 ) {
-    constructor(maxCount: Int = UNLIMITED_CACHE_COUNT) : this(BaseCacheStore(maxCount))
+    constructor(
+        maxCount: Int = UNLIMITED_CACHE_COUNT,
+        lock: Boolean = false,
+    ) : this(BaseCacheStore(maxCount), lock = lock)
 
     @Suppress("REDUNDANT_INLINE_SUSPEND_FUNCTION_TYPE")
     suspend inline fun <T> cacheOrInvoke(vararg key: Any?, value: suspend () -> T): T {

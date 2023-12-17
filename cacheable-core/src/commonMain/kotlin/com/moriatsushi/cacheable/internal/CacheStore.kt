@@ -12,7 +12,10 @@ internal class CacheStore(
     private val lockStore: LockStore<SynchronizedObject> = LockStore.SynchronizedObjectStore,
     private val lock: Boolean = false,
 ) {
-    constructor(maxCount: Int = UNLIMITED_CACHE_COUNT) : this(BaseCacheStore(maxCount))
+    constructor(
+        maxCount: Int = UNLIMITED_CACHE_COUNT,
+        lock: Boolean = false,
+    ) : this(BaseCacheStore(maxCount), lock = lock)
 
     inline fun <T> cacheOrInvoke(vararg key: Any?, value: () -> T): T {
         val keyList = key.toList()

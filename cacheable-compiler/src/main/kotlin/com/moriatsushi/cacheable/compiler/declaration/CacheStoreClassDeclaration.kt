@@ -32,15 +32,19 @@ class CacheStoreClassDeclaration(
 
     private val irConstructorSymbol: IrConstructorSymbol
         get() = irClassSymbol.constructors.single {
-            it.owner.valueParameters.size == 1 &&
-                it.owner.valueParameters.first().type == irBuiltIns.intType
+            it.owner.valueParameters.size == 2 &&
+                it.owner.valueParameters[0].type == irBuiltIns.intType &&
+                it.owner.valueParameters[1].type == irBuiltIns.booleanType
         }
 
     private val irCacheOrInvokeFunctionSymbol: IrSimpleFunctionSymbol
         get() = irClassSymbol.functions
             .single { it.owner.name == cacheOrInvokedFunctionName }
 
-    fun createConstructorCall(maxCountExpression: IrExpression?): IrConstructorCall {
+    fun createConstructorCall(
+        maxCountExpression: IrExpression?,
+        lockExpression: IrExpression?,
+    ): IrConstructorCall {
         val call = IrConstructorCallImpl(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
@@ -48,11 +52,10 @@ class CacheStoreClassDeclaration(
             symbol = irConstructorSymbol,
             typeArgumentsCount = 0,
             constructorTypeArgumentsCount = 0,
-            valueArgumentsCount = 1,
+            valueArgumentsCount = 2,
         )
-        if (maxCountExpression != null) {
-            call.putValueArgument(0, maxCountExpression)
-        }
+        call.putValueArgument(0, maxCountExpression)
+        call.putValueArgument(1, lockExpression)
         return call
     }
 

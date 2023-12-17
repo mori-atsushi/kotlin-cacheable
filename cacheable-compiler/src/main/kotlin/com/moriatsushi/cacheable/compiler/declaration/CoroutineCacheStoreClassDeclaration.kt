@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
-class SuspendCacheStoreClassDeclaration(
+class CoroutineCacheStoreClassDeclaration(
     private val irClassSymbol: IrClassSymbol,
     private val irBuiltIns: IrBuiltIns,
 ) {
@@ -32,15 +32,19 @@ class SuspendCacheStoreClassDeclaration(
 
     private val irConstructorSymbol: IrConstructorSymbol
         get() = irClassSymbol.constructors.single {
-            it.owner.valueParameters.size == 1 &&
-                it.owner.valueParameters.first().type == irBuiltIns.intType
+            it.owner.valueParameters.size == 2 &&
+                it.owner.valueParameters[0].type == irBuiltIns.intType &&
+                it.owner.valueParameters[1].type == irBuiltIns.booleanType
         }
 
     private val irCacheOrInvokeFunctionSymbol: IrSimpleFunctionSymbol
         get() = irClassSymbol.functions
             .single { it.owner.name == cacheOrInvokedFunctionName }
 
-    fun createConstructorCall(maxCountExpression: IrExpression?): IrConstructorCall {
+    fun createConstructorCall(
+        maxCountExpression: IrExpression?,
+        lockExpression: IrExpression?,
+    ): IrConstructorCall {
         val call = IrConstructorCallImpl(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
@@ -48,11 +52,10 @@ class SuspendCacheStoreClassDeclaration(
             symbol = irConstructorSymbol,
             typeArgumentsCount = 0,
             constructorTypeArgumentsCount = 0,
-            valueArgumentsCount = 1,
+            valueArgumentsCount = 2,
         )
-        if (maxCountExpression != null) {
-            call.putValueArgument(0, maxCountExpression)
-        }
+        call.putValueArgument(0, maxCountExpression)
+        call.putValueArgument(1, lockExpression)
         return call
     }
 
@@ -90,9 +93,9 @@ class SuspendCacheStoreClassDeclaration(
             ClassId(internalPackageName, Name.identifier("CoroutineCacheStore"))
         private val cacheOrInvokedFunctionName = Name.identifier("cacheOrInvoke")
 
-        fun find(pluginContext: IrPluginContext): SuspendCacheStoreClassDeclaration? =
+        fun find(pluginContext: IrPluginContext): CoroutineCacheStoreClassDeclaration? =
             pluginContext.referenceClass(cacheStoreId)?.let {
-                SuspendCacheStoreClassDeclaration(it, pluginContext.irBuiltIns)
+                CoroutineCacheStoreClassDeclaration(it, pluginContext.irBuiltIns)
             }
     }
 }

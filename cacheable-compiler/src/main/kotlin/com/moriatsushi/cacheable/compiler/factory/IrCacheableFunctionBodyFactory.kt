@@ -154,7 +154,7 @@ class IrCacheableFunctionBodyFactory(
             )
         }
         return if (isSuspend) {
-            cacheableDeclarations.suspendCacheStoreClassDeclaration
+            cacheableDeclarations.coroutineCacheStoreClassDeclaration
                 .createCacheOrInvokeFunctionCall(
                     typeArgument = typeArgument,
                     keyElements = keyElements,
