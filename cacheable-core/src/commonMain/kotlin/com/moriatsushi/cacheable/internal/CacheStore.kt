@@ -9,7 +9,8 @@ import kotlinx.atomicfu.locks.synchronized
  */
 internal class CacheStore(
     private val cacheStore: BaseCacheStore = BaseCacheStore(),
-    private val lockStore: LockStore<SynchronizedObject> = LockStore.SynchronizedObjectStore,
+    private val lockStore: LockStore<SynchronizedObject> =
+        LockStore.createSynchronizedObjectStore(),
     private val lock: Boolean = false,
 ) {
     constructor(

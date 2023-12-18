@@ -5,17 +5,31 @@ import kotlinx.atomicfu.locks.SynchronizedObject
 import kotlinx.coroutines.sync.Mutex
 
 internal class LockStore<T>(private val lockFactory: () -> T) {
-    private val lockMap = ConcurrentMutableMap<Any, T>()
+    private val lockMap = ConcurrentMutableMap<Any, Entry<T>>()
 
     fun getLockKey(key: Any): T =
-        lockMap.computeIfAbsent(key) { lockFactory() }
+        lockMap.block {
+            val entry = lockMap.getOrPut(key) { Entry(lockFactory()) }
+            entry.referrerCount++
+            entry.lock
+        }
 
     fun removeLockKey(key: Any) {
-        lockMap.remove(key)
+        lockMap.block {
+            val entry = lockMap[key] ?: return@block
+            entry.referrerCount--
+            if (entry.referrerCount <= 0) {
+                lockMap.remove(key)
+            }
+        }
     }
 
+    private data class Entry<T>(val lock: T, var referrerCount: Int = 0)
+
     companion object {
-        val SynchronizedObjectStore: LockStore<SynchronizedObject> = LockStore(::SynchronizedObject)
-        val MutexStore: LockStore<Mutex> = LockStore(::Mutex)
+        fun createSynchronizedObjectStore(): LockStore<SynchronizedObject> =
+            LockStore(::SynchronizedObject)
+
+        fun createMutexStore(): LockStore<Mutex> = LockStore(::Mutex)
     }
 }

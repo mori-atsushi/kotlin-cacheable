@@ -9,7 +9,7 @@ import kotlinx.coroutines.sync.withLock
  */
 internal class CoroutineCacheStore(
     private val cacheStore: BaseCacheStore = BaseCacheStore(),
-    private val lockStore: LockStore<Mutex> = LockStore.MutexStore,
+    private val lockStore: LockStore<Mutex> = LockStore.createMutexStore(),
     private val lock: Boolean = false,
 ) {
     constructor(
