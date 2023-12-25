@@ -42,7 +42,7 @@ dependencies {
 }
 ```
 
-## Usage
+## Basic Usage
 
 You can use `@Cacheable` annotation to cache the result of specified functions.
 When you call a function with this annotation, it will return the cached value if the function is
@@ -69,26 +69,32 @@ fun getSomething(key: String): Something =
 If you use the cacheable function within a class, the cache is only shared within an instance of the
 class.
 
-In addition, if you specify `maxCount` parameter, the number of cached values will be limited to the
-specified value.
-If the number of cached values exceeds the specified value, the cache with the oldest access time
-will be removed.
-
-```kotlin
-class SomeClass {
-    @Cacheable(maxCount = 10)
-    fun getSomething(key: String): Something {
-        // ...
-    }
-}
-```
-
 You can also use `@Cacheable` annotation for a suspend function.
 
 ```kotlin
 class Repository(private val api: Api) {
-    @Cacheable(maxCount = 10)
+    @Cacheable
     suspend fun getUser(id: String): User =
         api.getUser(id)
+}
+```
+
+## APIs
+There are 2 parameters you can specify to `@Cacheable` annotation.
+
+* `maxCount`: The maximum number of cached values. If the number of cached values exceeds this
+  value, the cache with the oldest access time will be removed. If you don't specify this parameter,
+  the number of cached values will be unlimited.
+* `lock`: When this is `true`, the function is guaranteed to be called only once even if the
+  function is called multiple times with the same arguments at the same time. Otherwise, the
+  function may be called multiple times with the same arguments at the same time. The default value
+  is false.
+
+```kotlin
+class SomeClass {
+    @Cacheable(maxCount = 10, lock = true)
+    fun getSomething(key: String): Something {
+        // ...
+    }
 }
 ```
