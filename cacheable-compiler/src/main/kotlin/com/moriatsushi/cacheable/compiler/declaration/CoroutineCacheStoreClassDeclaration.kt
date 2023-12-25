@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
 
-class CacheStoreClassDeclaration(
+class CoroutineCacheStoreClassDeclaration(
     private val irClassSymbol: IrClassSymbol,
     private val irBuiltIns: IrBuiltIns,
 ) {
@@ -89,12 +89,13 @@ class CacheStoreClassDeclaration(
 
     companion object {
         private val internalPackageName = FqName("com.moriatsushi.cacheable.internal")
-        private val cacheStoreId = ClassId(internalPackageName, Name.identifier("CacheStore"))
+        private val cacheStoreId =
+            ClassId(internalPackageName, Name.identifier("CoroutineCacheStore"))
         private val cacheOrInvokedFunctionName = Name.identifier("cacheOrInvoke")
 
-        fun find(pluginContext: IrPluginContext): CacheStoreClassDeclaration? =
+        fun find(pluginContext: IrPluginContext): CoroutineCacheStoreClassDeclaration? =
             pluginContext.referenceClass(cacheStoreId)?.let {
-                CacheStoreClassDeclaration(it, pluginContext.irBuiltIns)
+                CoroutineCacheStoreClassDeclaration(it, pluginContext.irBuiltIns)
             }
     }
 }

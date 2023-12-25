@@ -14,7 +14,12 @@ class CacheableAnnotationDeclaration {
     fun findMaxCountExpression(annotationContainer: IrAnnotationContainer): IrExpression? =
         annotationContainer.getAnnotation(name)
             ?.valueArguments
-            ?.firstOrNull()
+            ?.getOrNull(0)
+
+    fun findLockExpression(annotationContainer: IrAnnotationContainer): IrExpression? =
+        annotationContainer.getAnnotation(name)
+            ?.valueArguments
+            ?.getOrNull(1)
 
     companion object {
         val name = FqName("com.moriatsushi.cacheable.Cacheable")

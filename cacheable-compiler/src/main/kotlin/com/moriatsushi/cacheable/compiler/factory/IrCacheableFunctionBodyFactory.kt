@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrReturnImpl
 import org.jetbrains.kotlin.ir.symbols.IrReturnTargetSymbol
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.typeWith
+import org.jetbrains.kotlin.ir.util.isSuspend
 import org.jetbrains.kotlin.name.SpecialNames
 
 class IrCacheableFunctionBodyFactory(
@@ -61,6 +62,7 @@ class IrCacheableFunctionBodyFactory(
             lambdaExpression = lambdaExpression,
             thisReceiver = thisReceiver,
             typeArgument = originalFunction.returnType,
+            isSuspend = originalFunction.isSuspend,
         )
         return createSingleLineBlockBody(
             type = originalFunction.returnType,
@@ -105,6 +107,7 @@ class IrCacheableFunctionBodyFactory(
             name = SpecialNames.ANONYMOUS
             returnType = actualCall.type
             visibility = DescriptorVisibilities.LOCAL
+            isSuspend = actualCall.isSuspend
         }
         lambda.parent = parent
         lambda.body = createSingleLineBlockBody(
@@ -112,10 +115,16 @@ class IrCacheableFunctionBodyFactory(
             returnTargetSymbol = lambda.symbol,
             value = actualCall,
         )
+        val lambdaType = if (actualCall.isSuspend) {
+            irBuiltIns.suspendFunctionN(0)
+        } else {
+            irBuiltIns.functionN(0)
+        }.typeWith(listOf(actualCall.type))
+
         return IrFunctionExpressionImpl(
             startOffset = UNDEFINED_OFFSET,
             endOffset = UNDEFINED_OFFSET,
-            type = irBuiltIns.functionN(0).typeWith(listOf(actualCall.type)),
+            type = lambdaType,
             function = lambda,
             origin = IrStatementOrigin.LAMBDA,
         )
@@ -127,6 +136,7 @@ class IrCacheableFunctionBodyFactory(
         lambdaExpression: IrExpression,
         thisReceiver: IrExpression?,
         typeArgument: IrType,
+        isSuspend: Boolean,
     ): IrCall {
         val dispatchReceiver = IrGetFieldImpl(
             startOffset = UNDEFINED_OFFSET,
@@ -143,13 +153,23 @@ class IrCacheableFunctionBodyFactory(
                 type = it.type,
             )
         }
-        return cacheableDeclarations.cacheStoreClassDeclaration
-            .createCacheOrInvokeFunctionCall(
-                typeArgument = typeArgument,
-                keyElements = keyElements,
-                blockExpression = lambdaExpression,
-                dispatchReceiver = dispatchReceiver,
-            )
+        return if (isSuspend) {
+            cacheableDeclarations.coroutineCacheStoreClassDeclaration
+                .createCacheOrInvokeFunctionCall(
+                    typeArgument = typeArgument,
+                    keyElements = keyElements,
+                    blockExpression = lambdaExpression,
+                    dispatchReceiver = dispatchReceiver,
+                )
+        } else {
+            cacheableDeclarations.cacheStoreClassDeclaration
+                .createCacheOrInvokeFunctionCall(
+                    typeArgument = typeArgument,
+                    keyElements = keyElements,
+                    blockExpression = lambdaExpression,
+                    dispatchReceiver = dispatchReceiver,
+                )
+        }
     }
 
     private fun createSingleLineBlockBody(

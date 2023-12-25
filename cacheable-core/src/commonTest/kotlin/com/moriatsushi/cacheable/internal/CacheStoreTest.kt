@@ -43,7 +43,7 @@ class CacheStoreTest {
     @Test
     fun testCacheOrInvoke_withMaxCount() {
         var currentEpochMillis: Long = 0
-        val cacheStore = CacheStore(maxCount = 2) { currentEpochMillis }
+        val cacheStore = CacheStore(BaseCacheStore(maxCount = 2) { currentEpochMillis })
 
         currentEpochMillis = 0
         cacheStore.cacheOrInvoke("key1") { "value1" }

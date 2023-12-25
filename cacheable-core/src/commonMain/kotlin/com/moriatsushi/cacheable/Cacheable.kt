@@ -8,11 +8,18 @@ package com.moriatsushi.cacheable
  *
  * @param maxCount The maximum number of caches. If the number of caches exceeds this value, the
  * last used cache will be deleted. The default value is [unlimited][UNLIMITED_CACHE_COUNT].
+ * @param lock When this is true, the function is guaranteed to be called only once even if the
+ * function is called multiple times with the same arguments at the same time. Otherwise, the
+ * function may be called multiple times with the same arguments at the same time. The default value
+ * is false.
  */
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)
 @MustBeDocumented
-annotation class Cacheable(val maxCount: Int = UNLIMITED_CACHE_COUNT)
+annotation class Cacheable(
+    val maxCount: Int = UNLIMITED_CACHE_COUNT,
+    val lock: Boolean = false,
+)
 
 /**
  * A constant indicating that the number of caches is unlimited.

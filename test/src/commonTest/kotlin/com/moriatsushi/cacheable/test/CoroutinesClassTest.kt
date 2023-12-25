@@ -2,6 +2,7 @@ package com.moriatsushi.cacheable.test
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 
 class CoroutinesClassTest {
@@ -26,5 +27,33 @@ class CoroutinesClassTest {
         assertEquals(2, int3)
         val int4 = target.cacheableWithKey("key2")
         assertEquals(int3, int4)
+    }
+
+    @Test
+    fun testWithLock() = runTest {
+        val target = CoroutinesClass()
+
+        launch {
+            val int1 = target.cacheableWithLock()
+            assertEquals(1, int1)
+        }
+        launch {
+            val int2 = target.cacheableWithLock()
+            assertEquals(1, int2)
+        }
+    }
+
+    @Test
+    fun testWithoutLock() = runTest {
+        val target = CoroutinesClass()
+
+        launch {
+            val int1 = target.cacheableInt()
+            assertEquals(1, int1)
+        }
+        launch {
+            val int2 = target.cacheableInt()
+            assertEquals(2, int2)
+        }
     }
 }
