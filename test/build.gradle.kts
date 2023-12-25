@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    id("com.moriatsushi.cacheable") version "0.0.2"
+    id("com.moriatsushi.cacheable") version "0.0.3"
 }
 
 kotlin {
