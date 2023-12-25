@@ -29,7 +29,7 @@ Enable the Gradle plugin for the module where you want to use this library.
 // build.gradle.kts
 plugins {
     kotlin(/* ... */)
-    id("com.moriatsushi.cacheable") version "0.0.2"
+    id("com.moriatsushi.cacheable") version "0.0.3"
 }
 ```
 
@@ -38,7 +38,7 @@ You also need to add the `cacheable-core` dependency to the module.
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("com.moriatsushi.cacheable:cacheable-core:0.0.2")
+    implementation("com.moriatsushi.cacheable:cacheable-core:0.0.3")
 }
 ```
 
